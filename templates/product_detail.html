@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} — ShopEase{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="{{ url_for('home') }}">Home</a>
+            <span class="breadcrumb-sep">›</span>
+            <a href="{{ url_for('products') }}">Products</a>
+            <span class="breadcrumb-sep">›</span>
+            <a href="{{ url_for('products', category=product.category_id) }}">{{ product.category_name }}</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>{{ product.name }}</span>
+        </nav>
+
+        <div class="product-detail" id="product-detail-{{ product.id }}">
+            <!-- Product Image -->
+            <div class="detail-image">
+                <img src="{{ url_for('static', filename='images/' + product.image_filename) }}"
+                     alt="{{ product.name }}"
+                     onerror="this.src='{{ url_for('static', filename='images/default.png') }}'">
+            </div>
+
+            <!-- Product Information -->
+            <div class="detail-info">
+                <span class="product-category">{{ product.category_name }}</span>
+                <h1 class="detail-name">{{ product.name }}</h1>
+                <div class="detail-price">₹{{ "%.2f"|format(product.price) }}</div>
+
+                <div class="detail-stock">
+                    {% if product.stock > 0 %}
+                        <span class="stock-in">✓ In Stock — {{ product.stock }} available</span>
+                    {% else %}
+                        <span class="stock-out">✗ Currently Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <div class="detail-description">
+                    <h3>Description</h3>
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <!-- Add to Cart Form -->
+                {% if product.stock > 0 %}
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="detail-cart-form">
+                        <div class="quantity-selector">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" name="quantity" id="quantity" value="1"
+                                   min="1" max="{{ product.stock }}" class="form-input quantity-input">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-add-cart" id="add-to-cart-btn">
+                            🛒 Add to Cart
+                        </button>
+                    </form>
+                {% else %}
+                    <button class="btn btn-disabled btn-lg" disabled>Out of Stock</button>
+                {% endif %}
+
+                <!-- Product meta -->
+                <div class="detail-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Category:</span>
+                        <span class="meta-value">{{ product.category_name }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Product ID:</span>
+                        <span class="meta-value">#{{ product.id }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back link -->
+        <div class="back-link">
+            <a href="{{ url_for('products') }}" class="btn btn-outline">← Back to Products</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

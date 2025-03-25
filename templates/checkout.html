@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout — ShopEase{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <h1 class="page-title">Checkout</h1>
+
+        <form method="POST" action="{{ url_for('checkout') }}" class="checkout-layout" id="checkout-form">
+            <!-- Delivery Details -->
+            <div class="checkout-form">
+                <div class="form-card">
+                    <h2 class="form-card-title">📦 Delivery Details</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="full_name" class="form-label">Full Name *</label>
+                            <input type="text" name="full_name" id="full_name" class="form-input"
+                                   value="{{ user.full_name if user else '' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" name="email" id="email" class="form-input"
+                                   value="{{ user.email if user else '' }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" name="phone" id="phone" class="form-input"
+                                   value="{{ user.phone if user else '' }}" required
+                                   placeholder="10-digit number">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address" class="form-label">Street Address *</label>
+                        <textarea name="address" id="address" class="form-input form-textarea"
+                                  rows="3" required>{{ user.address if user else '' }}</textarea>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label for="city" class="form-label">City *</label>
+                            <input type="text" name="city" id="city" class="form-input"
+                                   value="{{ user.city if user else '' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="state" class="form-label">State *</label>
+                            <input type="text" name="state" id="state" class="form-input"
+                                   value="{{ user.state if user else '' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pincode" class="form-label">Pincode *</label>
+                            <input type="text" name="pincode" id="pincode" class="form-input"
+                                   value="{{ user.pincode if user else '' }}" required
+                                   pattern="[0-9]{6}" maxlength="6" placeholder="6-digit pincode">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h3 class="payment-title">💳 Payment Method</h3>
+                        <div class="payment-option selected">
+                            <input type="radio" name="payment_method" value="Cash on Delivery"
+                                   checked id="cod-radio">
+                            <label for="cod-radio" class="payment-label">
+                                <span class="payment-icon">💵</span>
+                                <div>
+                                    <strong>Cash on Delivery</strong>
+                                    <p>Pay when your order arrives</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="checkout-summary">
+                <div class="summary-card">
+                    <h3>Order Summary</h3>
+                    <div class="summary-rows">
+                        {% for item in items %}
+                            <div class="summary-row">
+                                <span>{{ item.name }} × {{ item.quantity }}</span>
+                                <span>₹{{ "%.2f"|format(item.subtotal) }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-total">
+                        <span>Total Amount</span>
+                        <span class="total-amount">₹{{ "%.2f"|format(total) }}</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="place-order-btn">
+                        ✓ Place Order
+                    </button>
+                    <a href="{{ url_for('cart') }}" class="btn btn-outline btn-block">
+                        ← Back to Cart
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

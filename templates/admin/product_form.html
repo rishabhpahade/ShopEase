@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Product — Admin — ShopEase{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+            <span class="breadcrumb-sep">›</span>
+            <a href="{{ url_for('admin_products') }}">Products</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>{{ action }} Product</span>
+        </nav>
+
+        <h1 class="page-title">{{ action }} Product</h1>
+
+        <div class="form-card form-card-wide">
+            <form method="POST"
+                  action="{{ url_for('admin_edit_product', product_id=product.id) if product else url_for('admin_add_product') }}"
+                  enctype="multipart/form-data" id="product-form">
+
+                <div class="form-group">
+                    <label for="name" class="form-label">Product Name *</label>
+                    <input type="text" name="name" id="name" class="form-input"
+                           value="{{ product.name if product else '' }}" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category_id" class="form-label">Category *</label>
+                        <select name="category_id" id="category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}"
+                                        {% if product and product.category_id == cat.id %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="price" class="form-label">Price (₹) *</label>
+                        <input type="number" name="price" id="price" class="form-input"
+                               value="{{ product.price if product else '' }}" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock" class="form-label">Stock *</label>
+                        <input type="number" name="stock" id="stock" class="form-input"
+                               value="{{ product.stock if product else '' }}" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-input form-textarea"
+                              rows="5">{{ product.description if product else '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="image" class="form-label">Product Image</label>
+                    {% if product and product.image_filename %}
+                        <div class="current-image">
+                            <img src="{{ url_for('static', filename='images/' + product.image_filename) }}"
+                                 alt="Current image" class="preview-image"
+                                 onerror="this.src='{{ url_for('static', filename='images/default.png') }}'">
+                            <p class="text-muted">Current: {{ product.image_filename }}</p>
+                        </div>
+                    {% endif %}
+                    <input type="file" name="image" id="image" class="form-input"
+                           accept=".png,.jpg,.jpeg,.gif,.webp">
+                    <p class="form-help">Max 2 MB. Supported: PNG, JPG, GIF, WebP</p>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg" id="save-product-btn">
+                        {{ 'Update' if product else 'Add' }} Product
+                    </button>
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-outline btn-lg">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

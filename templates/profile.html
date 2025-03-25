@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile — ShopEase{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <h1 class="page-title">My Profile</h1>
+
+        <div class="profile-layout">
+            <div class="form-card">
+                <h2 class="form-card-title">👤 Personal & Delivery Details</h2>
+
+                <form method="POST" action="{{ url_for('profile') }}" id="profile-form">
+                    <div class="form-group">
+                        <label for="full_name" class="form-label">Full Name *</label>
+                        <input type="text" name="full_name" id="full_name" class="form-input"
+                               value="{{ user.full_name }}" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-input" value="{{ user.username }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" value="{{ user.email }}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" name="phone" id="phone" class="form-input"
+                               value="{{ user.phone }}" placeholder="10-digit number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address" class="form-label">Street Address</label>
+                        <textarea name="address" id="address" class="form-input form-textarea"
+                                  rows="3">{{ user.address }}</textarea>
+                    </div>
+
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" name="city" id="city" class="form-input"
+                                   value="{{ user.city }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" name="state" id="state" class="form-input"
+                                   value="{{ user.state }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="pincode" class="form-label">Pincode</label>
+                            <input type="text" name="pincode" id="pincode" class="form-input"
+                                   value="{{ user.pincode }}" maxlength="6">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" id="save-profile-btn">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+
+            <div class="profile-sidebar">
+                <div class="summary-card">
+                    <h3>Account Info</h3>
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">{{ user.full_name[0]|upper }}</div>
+                        <h4>{{ user.full_name }}</h4>
+                        <p class="text-muted">@{{ user.username }}</p>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row">
+                        <span>Member Since</span>
+                        <span>{{ user.created_at }}</span>
+                    </div>
+                    <a href="{{ url_for('orders') }}" class="btn btn-outline btn-block">
+                        View My Orders
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

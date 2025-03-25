@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}500 — Server Error{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <div class="error-page">
+            <div class="error-code">500</div>
+            <h1 class="error-title">Something Went Wrong</h1>
+            <p class="error-message">We encountered an internal server error. Please try again later.</p>
+            <div class="error-actions">
+                <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg">Go Home</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

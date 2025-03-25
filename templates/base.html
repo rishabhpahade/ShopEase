@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ShopEase — Your premium online shopping destination for electronics, clothing, books, home goods and sports equipment.">
+    <title>{% block title %}ShopEase — E-Commerce Store{% endblock %}</title>
+
+    <!-- Google Fonts — Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Application stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- ================================================================ -->
+    <!-- NAVIGATION BAR                                                   -->
+    <!-- ================================================================ -->
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <!-- Logo -->
+            <a href="{{ url_for('home') }}" class="nav-logo">
+                <span class="logo-icon">🛍️</span>
+                <span class="logo-text">Shop<span class="logo-accent">Ease</span></span>
+            </a>
+
+            <!-- Navigation links -->
+            <ul class="nav-links" id="nav-links">
+                <li><a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('products') }}" class="nav-link {% if request.endpoint == 'products' %}active{% endif %}">Products</a></li>
+
+                {% if current_user %}
+                    <!-- Logged-in user links -->
+                    <li>
+                        <a href="{{ url_for('cart') }}" class="nav-link nav-cart {% if request.endpoint == 'cart' %}active{% endif %}">
+                            🛒 Cart
+                            {% if cart_count > 0 %}
+                                <span class="cart-badge">{{ cart_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li><a href="{{ url_for('orders') }}" class="nav-link {% if request.endpoint == 'orders' %}active{% endif %}">Orders</a></li>
+                    {% if current_user.is_admin %}
+                        <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link nav-admin {% if 'admin' in request.endpoint %}active{% endif %}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">{{ current_user.full_name }}</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link nav-logout">Logout</a></li>
+                {% else %}
+                    <!-- Guest links -->
+                    <li><a href="{{ url_for('login') }}" class="nav-link {% if request.endpoint == 'login' %}active{% endif %}">Login</a></li>
+                    <li><a href="{{ url_for('register') }}" class="nav-link btn-nav-register">Register</a></li>
+                {% endif %}
+            </ul>
+
+            <!-- Mobile menu toggle -->
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- FLASH MESSAGES                                                   -->
+    <!-- ================================================================ -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT                                                     -->
+    <!-- ================================================================ -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER                                                           -->
+    <!-- ================================================================ -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3 class="footer-title">
+                        <span class="logo-icon">🛍️</span> Shop<span class="logo-accent">Ease</span>
+                    </h3>
+                    <p class="footer-desc">Your premium online shopping destination. Quality products, great prices, and exceptional service.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('products') }}">Products</a></li>
+                        <li><a href="{{ url_for('cart') }}">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('products', category=1) }}">Electronics</a></li>
+                        <li><a href="{{ url_for('products', category=2) }}">Clothing</a></li>
+                        <li><a href="{{ url_for('products', category=3) }}">Books</a></li>
+                        <li><a href="{{ url_for('products', category=4) }}">Home & Kitchen</a></li>
+                        <li><a href="{{ url_for('products', category=5) }}">Sports</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li>📧 support@shopease.com</li>
+                        <li>📞 +91 98765 43210</li>
+                        <li>📍 Matrix Technologies, India</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2023 ShopEase — Matrix Technologies. All rights reserved.</p>
+                <p>Built with Flask &amp; Python | Vocational Training Project</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Minimal inline JS for mobile nav toggle (no framework) -->
+    <script>
+        document.getElementById('nav-toggle').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('nav-open');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

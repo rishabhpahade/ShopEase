@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Order {{ order.order_number }} — ShopEase{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{{ url_for('orders') }}">My Orders</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>{{ order.order_number }}</span>
+        </nav>
+
+        <h1 class="page-title">Order Details</h1>
+
+        <div class="order-detail-layout">
+            <!-- Order Information -->
+            <div class="order-detail-main">
+                <div class="form-card">
+                    <div class="order-status-header">
+                        <h2>{{ order.order_number }}</h2>
+                        <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+                    </div>
+
+                    <!-- Status Progress -->
+                    <div class="status-progress">
+                        {% set statuses = ['Placed', 'Processing', 'Shipped', 'Delivered'] %}
+                        {% set current_index = statuses.index(order.status) if order.status in statuses else 0 %}
+                        {% for s in statuses %}
+                            <div class="status-step {% if loop.index0 <= current_index %}completed{% endif %} {% if loop.index0 == current_index %}current{% endif %}">
+                                <div class="step-dot"></div>
+                                <span class="step-label">{{ s }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <h3>Items</h3>
+                    <table class="order-items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td>{{ item.product_name }}</td>
+                                    <td>₹{{ "%.2f"|format(item.product_price) }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ "%.2f"|format(item.subtotal) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Total</strong></td>
+                                <td><strong>₹{{ "%.2f"|format(order.total_amount) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Delivery Info Sidebar -->
+            <div class="order-detail-sidebar">
+                <div class="summary-card">
+                    <h3>Delivery Information</h3>
+                    <div class="delivery-info">
+                        <p><strong>{{ order.full_name }}</strong></p>
+                        <p>{{ order.address }}</p>
+                        <p>{{ order.city }}, {{ order.state }} — {{ order.pincode }}</p>
+                        <p>📞 {{ order.phone }}</p>
+                        <p>📧 {{ order.email }}</p>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row">
+                        <span>Payment</span>
+                        <span>{{ order.payment_method }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Ordered</span>
+                        <span>{{ order.created_at }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="{{ url_for('orders') }}" class="btn btn-outline">← Back to Orders</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

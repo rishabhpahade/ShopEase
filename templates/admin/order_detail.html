@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Order {{ order.order_number }} — Admin — ShopEase{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+            <span class="breadcrumb-sep">›</span>
+            <a href="{{ url_for('admin_orders') }}">Orders</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>{{ order.order_number }}</span>
+        </nav>
+
+        <h1 class="page-title">Order Management</h1>
+
+        <div class="order-detail-layout">
+            <div class="order-detail-main">
+                <div class="form-card">
+                    <div class="order-status-header">
+                        <h2>{{ order.order_number }}</h2>
+                        <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+                    </div>
+
+                    <!-- Update Status Form -->
+                    <form method="POST" action="{{ url_for('admin_order_detail', order_id=order.id) }}"
+                          class="status-update-form" id="status-form">
+                        <label for="status" class="form-label">Update Status:</label>
+                        <div class="status-update-row">
+                            <select name="status" id="status" class="form-select">
+                                {% for s in ['Placed', 'Processing', 'Shipped', 'Delivered'] %}
+                                    <option value="{{ s }}" {% if order.status == s %}selected{% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm" id="update-status-btn">Update</button>
+                        </div>
+                    </form>
+
+                    <h3>Order Items</h3>
+                    <table class="order-items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td>{{ item.product_name }}</td>
+                                    <td>₹{{ "%.2f"|format(item.product_price) }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>₹{{ "%.2f"|format(item.subtotal) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Total</strong></td>
+                                <td><strong>₹{{ "%.2f"|format(order.total_amount) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="order-detail-sidebar">
+                <div class="summary-card">
+                    <h3>Customer Details</h3>
+                    {% if customer %}
+                        <div class="delivery-info">
+                            <p><strong>{{ customer.full_name }}</strong></p>
+                            <p>@{{ customer.username }}</p>
+                            <p>📧 {{ customer.email }}</p>
+                        </div>
+                    {% endif %}
+
+                    <div class="summary-divider"></div>
+
+                    <h3>Delivery Address</h3>
+                    <div class="delivery-info">
+                        <p><strong>{{ order.full_name }}</strong></p>
+                        <p>{{ order.address }}</p>
+                        <p>{{ order.city }}, {{ order.state }} — {{ order.pincode }}</p>
+                        <p>📞 {{ order.phone }}</p>
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-row">
+                        <span>Payment</span>
+                        <span>{{ order.payment_method }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Ordered</span>
+                        <span>{{ order.created_at }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-outline">← Back to Orders</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

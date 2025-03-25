@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Products — ShopEase{% endblock %}
+
+{% block content %}
+<section class="section page-section">
+    <div class="container">
+        <h1 class="page-title">Product Catalogue</h1>
+
+        <!-- ============================================================ -->
+        <!-- SEARCH & FILTER BAR                                          -->
+        <!-- ============================================================ -->
+        <form class="filter-bar" method="GET" action="{{ url_for('products') }}" id="filter-form">
+            <!-- Search input -->
+            <div class="filter-search">
+                <input type="text" name="q" class="form-input search-input"
+                       placeholder="Search products..."
+                       value="{{ search_query or '' }}" id="search-input">
+            </div>
+
+            <!-- Category filter -->
+            <div class="filter-group">
+                <select name="category" class="form-select" id="category-filter">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}"
+                                {% if selected_category == cat.id %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Price range -->
+            <div class="filter-group filter-price">
+                <input type="number" name="min_price" class="form-input price-input"
+                       placeholder="Min ₹" min="0" step="1"
+                       value="{{ min_price or '' }}" id="min-price">
+                <span class="filter-separator">—</span>
+                <input type="number" name="max_price" class="form-input price-input"
+                       placeholder="Max ₹" min="0" step="1"
+                       value="{{ max_price or '' }}" id="max-price">
+            </div>
+
+            <!-- Action buttons -->
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary btn-sm" id="apply-filter">Apply</button>
+                <a href="{{ url_for('products') }}" class="btn btn-outline btn-sm" id="clear-filter">Clear</a>
+            </div>
+        </form>
+
+        <!-- ============================================================ -->
+        <!-- ACTIVE FILTERS DISPLAY                                       -->
+        <!-- ============================================================ -->
+        {% if search_query or selected_category or min_price or max_price %}
+            <div class="active-filters">
+                <span class="filter-label">Active filters:</span>
+                {% if search_query %}
+                    <span class="filter-tag">Search: "{{ search_query }}"</span>
+                {% endif %}
+                {% if selected_category %}
+                    {% for cat in categories %}
+                        {% if cat.id == selected_category %}
+                            <span class="filter-tag">Category: {{ cat.name }}</span>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if min_price %}
+                    <span class="filter-tag">Min: ₹{{ "%.0f"|format(min_price) }}</span>
+                {% endif %}
+                {% if max_price %}
+                    <span class="filter-tag">Max: ₹{{ "%.0f"|format(max_price) }}</span>
+                {% endif %}
+                <a href="{{ url_for('products') }}" class="filter-clear-all">Clear all</a>
+            </div>
+        {% endif %}
+
+        <!-- ============================================================ -->
+        <!-- PRODUCT RESULTS                                              -->
+        <!-- ============================================================ -->
+        <div class="results-info">
+            <p>{{ products|length }} product{{ 's' if products|length != 1 }} found</p>
+        </div>
+
+        {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-card" id="product-{{ product.id }}">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-image-link">
+                            <div class="product-image">
+                                <img src="{{ url_for('static', filename='images/' + product.image_filename) }}"
+                                     alt="{{ product.name }}"
+                                     onerror="this.src='{{ url_for('static', filename='images/default.png') }}'">
+                            </div>
+                        </a>
+                        <div class="product-info">
+                            <span class="product-category">{{ product.category_name }}</span>
+                            <h3 class="product-name">
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
+                            </h3>
+                            <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
+                            <div class="product-stock">
+                                {% if product.stock > 0 %}
+                                    <span class="stock-in">In Stock ({{ product.stock }})</span>
+                                {% else %}
+                                    <span class="stock-out">Out of Stock</span>
+                                {% endif %}
+                            </div>
+                            {% if product.stock > 0 %}
+                                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-primary btn-sm btn-add-cart">Add to Cart</button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-disabled btn-sm" disabled>Out of Stock</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>No products found</h3>
+                <p>Try adjusting your search or filter criteria.</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary">View All Products</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
