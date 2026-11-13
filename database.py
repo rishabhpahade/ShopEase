@@ -8,6 +8,7 @@ Provides helper functions to:
   • seed_data()— populate the database with sample data
 """
 
+import shutil
 import sqlite3
 import os
 from flask import g
@@ -48,6 +49,14 @@ def init_db(app):
     Create all tables defined in schema.sql and seed sample data.
     Called once when the application starts for the first time.
     """
+    # On a serverless host the deployment is read-only, so the SQLite file is
+    # copied into /tmp on cold start. The committed database is the seed.
+    if config.IS_SERVERLESS and not os.path.exists(config.DATABASE_PATH):
+        seed_copy = os.path.join(config.BASE_DIR, 'ecommerce.db')
+        if os.path.exists(seed_copy):
+            os.makedirs(os.path.dirname(config.DATABASE_PATH), exist_ok=True)
+            shutil.copyfile(seed_copy, config.DATABASE_PATH)
+
     with app.app_context():
         db = get_db()
 
