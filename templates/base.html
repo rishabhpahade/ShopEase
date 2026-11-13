@@ -43,7 +43,7 @@
                     </li>
                     <li><a href="{{ url_for('orders') }}" class="nav-link {% if request.endpoint == 'orders' %}active{% endif %}">Orders</a></li>
                     {% if current_user.is_admin %}
-                        <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link nav-admin {% if 'admin' in request.endpoint %}active{% endif %}">Admin</a></li>
+                        <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link nav-admin {% if request.endpoint and 'admin' in request.endpoint %}active{% endif %}">Admin</a></li>
                     {% endif %}
                     <li><a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">{{ current_user.full_name }}</a></li>
                     <li><a href="{{ url_for('logout') }}" class="nav-link nav-logout">Logout</a></li>
